@@ -1,2 +1,2 @@
-(add-to-list 'load-path "~/emacs")
-(load-file "~/emacs/main.el")
+(add-to-list 'load-path "~/etc/emacs")
+(load-file "~/etc/emacs/main.el")
