@@ -2,33 +2,38 @@
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 (package-initialize)
 
-;;==============================================================================
-;; Per Steve Yegge's advices as found at
-;;  http://steve.yegge.googlepages.com/effective-emacs
+(defun ensure-package-installed (&rest packages)
+  "Assure every package is installed, ask for installation if it’s not.
 
-;; Item 3: Prefer backward-kill-word over Backspace
-(global-set-key "\C-w" 'backward-kill-word)
-(global-set-key "\C-x\C-k" 'kill-region)
-(global-set-key "\C-c\C-k" 'kill-region)
-(global-set-key "\C-co" 'other-frame)
+Return a list of installed packages or nil for every skipped package."
+  (mapcar
+   (lambda (package)
+     (if (package-installed-p package)
+         nil
+       (if (y-or-n-p (format "Package %s is missing. Install it? " package))
+           (package-install package)
+         package)))
+   packages))
 
-;; Item 7: Lose the UI
+;; make sure to have downloaded archive description.
+;; Or use package-archive-contents as suggested by Nicolas Dudebout
+(or (file-exists-p package-user-dir)
+    (package-refresh-contents))
+
+(ensure-package-installed
+ 'ergoemacs-mode
+ 'magit
+ 'idle-highlight-mode
+ )
+
+;; activate installed packages
+(package-initialize)
+
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
-(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
-
-;; end of Steve Yegge's settings
-;;==============================================================================
+;(if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
 
 (global-set-key "\M-/" 'dabbrev-expand)
-
-
-(defun back-to-indentation-or-beginning ()
-   (interactive)
-   (if (= (point) (save-excursion (back-to-indentation) (point)))
-       (beginning-of-line)
-     (back-to-indentation)))
-
 
 (defun transpose-windows ()
   (interactive)
@@ -89,58 +94,60 @@
 (global-set-key "\C-cw" 'whitespace-mode)
 (global-set-key "\C-co" 'other-frame)
 (global-set-key "\C-ca" 'list-matching-lines)
+(global-set-key "\M-1" 'magit-status)
 
 ; unbind navigation to force myself to use C-b, C-f, etc
-(global-unset-key (kbd "<left>"))
-(global-unset-key (kbd "<right>"))
-(global-unset-key (kbd "<up>"))
-(global-unset-key (kbd "<down>"))
-(global-unset-key (kbd "<prior>"))
-(global-unset-key (kbd "<next>"))
-(global-unset-key (kbd "<home>"))
-(global-unset-key (kbd "<end>"))
+;; (global-unset-key (kbd "<left>"))
+;; (global-unset-key (kbd "<right>"))
+;; (global-unset-key (kbd "<up>"))
+;; (global-unset-key (kbd "<down>"))
+;; (global-unset-key (kbd "<prior>"))
+;; (global-unset-key (kbd "<next>"))
+;; (global-unset-key (kbd "<home>"))
+;; (global-unset-key (kbd "<end>"))
+
+(defun fixup-ergoemacs ()
+  "Fixup ergoemacs key bindings (after ergoemacs load)"
+  (interactive)
+  (progn
+    (global-set-key [f3] 'kmacro-start-macro-or-insert-counter)
+    (global-set-key [f4] 'kmacro-end-or-call-macro)
+    (global-set-key (kbd "M-/") 'dabbrev-expand)
+    )
+  )
+; TODO: add fixup-ergoemacs to onload hook
+(global-set-key [f12] 'fixup-ergoemacs)
 
 (global-font-lock-mode t) ; turn on syntax coloring
 (transient-mark-mode t) ; turn on selection highlighting
 (show-paren-mode t) ; turn on paren match highlighting
 (column-number-mode t)
 (setq inhibit-startup-message t) ; to skip *GNU Emacs* buffer (one with banner)
-(setq vc-svn-diff-switches "--diff-cmd=diff") ; force syste diff to be used, in case if colordiff is configured as svn diff
+;(setq vc-svn-diff-switches "--diff-cmd=diff") ; force syste diff to be used, in case if colordiff is configured as svn diff
 
 (set-face-font 'default "DejaVu Sans Mono-12")
 
 (load "kir_cpp.el")
 
+;; (eval-after-load 'grep
+;;       '(progn
+;;          (grep-apply-setting
+;;           'grep-find-ignored-directories
+;;           (purecopy '(".svn" ".git")))
+;;          (add-to-list 'grep-files-history "*")))
 
-;;(load "haskell-mode/haskell-site-file")
-;;
-;;(add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
-;;(add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
-;;;;(add-hook 'haskell-mode-hook 'turn-on-haskell-simple-indent)
+;; (eval-after-load 'grep
+;;       '(progn
+;;          (grep-apply-setting
+;;           'grep-find-ignored-files
+;;           (purecopy '("*~" "#*#")))
+;;          (add-to-list 'grep-files-history "*")))
 
-
-(eval-after-load 'grep
-      '(progn
-         (grep-apply-setting
-          'grep-find-ignored-directories
-          (purecopy '(".svn" ".git")))
-         (add-to-list 'grep-files-history "*")))
-
-(eval-after-load 'grep
-      '(progn
-         (grep-apply-setting
-          'grep-find-ignored-files
-          (purecopy '("*~" "#*#")))
-         (add-to-list 'grep-files-history "*")))
-
-(eval-after-load 'grep
-      '(progn
-         (grep-apply-setting 'grep-find-use-xargs 'gnu)))
+;; (eval-after-load 'grep
+;;       '(progn
+;;          (grep-apply-setting 'grep-find-use-xargs 'gnu)))
 
 
-;(iswitchb-mode t) ; turn on more intelligent buffer switcher on (C-x b)
-
-;(add-to-list 'load-path emacs-root )
 (require 'ido)
 (ido-mode t)
 (setq ido-enable-flex-matching t) ;; enable fuzzy matching
@@ -182,16 +189,16 @@
 ;; (global-set-key [(meta f2)]             'bc-list)
 
 
-;; (require 'idle-highlight-mode)
-;; (defun my-coding-hook ()
-;; ;  (if window-system (hl-line-mode t))
-;;   (idle-highlight-mode t))
+(require 'idle-highlight-mode)
+(defun my-coding-hook ()
+;  (if window-system (hl-line-mode t))
+  (idle-highlight-mode t))
 
-;; (add-hook 'emacs-lisp-mode-hook 'my-coding-hook)
-;; (add-hook 'ruby-mode-hook 'my-coding-hook)
-;; (add-hook 'js2-mode-hook 'my-coding-hook)
-;; (add-hook 'c++-mode-hook 'my-coding-hook)
-;; (add-hook 'python-mode-hook 'my-coding-hook)
+(add-hook 'emacs-lisp-mode-hook 'my-coding-hook)
+(add-hook 'ruby-mode-hook 'my-coding-hook)
+(add-hook 'js2-mode-hook 'my-coding-hook)
+(add-hook 'c++-mode-hook 'my-coding-hook)
+(add-hook 'python-mode-hook 'my-coding-hook)
 
 ;; (require 'jinja2-mode)
 ;; (autoload 'js2-mode "js2-20090723b" nil t)
@@ -228,6 +235,8 @@
 ;;                '("\\.py\\'" flymake-pyflakes-init)))
 ;; )
 ;(require 'flymake)
+
+(setq-default indent-tabs-mode nil)
 
 ; Python Hook
 (require 'python)
