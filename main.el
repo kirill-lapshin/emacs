@@ -275,4 +275,7 @@ Return a list of installed packages or nil for every skipped package."
 ;;    (ergoemacs-key (kbd "<f11>") 'gud-step)
 ;;    )
 ;; (setq ergoemacs-theme "kir")
+(setq ergoemacs-theme nil)
+(ergoemacs-theme-option-on '(guru no-backspace))
+(setq ergoemacs-handle-ctl-c-or-ctl-x 'only-C-c-and-C-x)
 (ergoemacs-mode 1)
