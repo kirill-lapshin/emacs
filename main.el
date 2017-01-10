@@ -24,6 +24,8 @@ Return a list of installed packages or nil for every skipped package."
  'ergoemacs-mode
  'magit
  'idle-highlight-mode
+ 'rust-mode
+ 'csharp-mode
  )
 
 ;; activate installed packages
@@ -252,8 +254,8 @@ Return a list of installed packages or nil for every skipped package."
 ;;  '(help-at-pt-timer-delay 0.9)
 ;;  '(help-at-pt-display-when-idle '(flymake-overlay)))
 
-;; (require 'rust-mode)
-;; (require 'csharp-mode)
+(require 'rust-mode)
+(require 'csharp-mode)
 
 ;; kill stupid default editing by visual line
 ;; it screws up macros
