@@ -1,6 +1,6 @@
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-(package-initialize)
+;; (package-initialize)
 
 (defun ensure-package-installed (&rest packages)
   "Assure every package is installed, ask for installation if it’s not.
@@ -279,7 +279,7 @@ Return a list of installed packages or nil for every skipped package."
 ;;    )
 ;; (setq ergoemacs-theme "kir")
 (setq ergoemacs-theme nil)
-(ergoemacs-theme-option-on '(guru no-backspace))
+;;(ergoemacs-theme-option-on '(guru no-backspace))
 (setq ergoemacs-handle-ctl-c-or-ctl-x 'only-C-c-and-C-x)
 (ergoemacs-mode 1)
 
