@@ -255,7 +255,7 @@ Return a list of installed packages or nil for every skipped package."
 ;;  '(help-at-pt-display-when-idle '(flymake-overlay)))
 
 (require 'rust-mode)
-(require 'csharp-mode)
+;;(require 'csharp-mode)
 
 ;; kill stupid default editing by visual line
 ;; it screws up macros
@@ -264,6 +264,7 @@ Return a list of installed packages or nil for every skipped package."
 ;; (add-to-list 'load-path (concat emacs-root "ergoemacs-mode"))
 ;; (require 'dabbrev)
 ;; (package-initialize)
+(cua-selection-mode t)
 (require 'ergoemacs-mode)
 ;; ;(setq ergoemacs-theme nil) ;; Uses Standard Ergoemacs keyboard theme
 ;; (setq ergoemacs-keyboard-layout "us") ;; Assumes QWERTY keyboard layout
